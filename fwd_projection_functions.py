@@ -4,6 +4,7 @@ from skimage import morphology as morph
 from skimage import filters
 import matplotlib.pyplot as plt
 import os
+from PIL import Image
 
 
 def set_axes_equal(ax):
@@ -192,7 +193,7 @@ def convert_clinical_to_standard_angles(clinical_angles):
     return theta_array, phi_array
 
 
-def generate_projection_images(surface_coords, spline_index, num_projections, image_dim, save_path, partition, imagerpxspacing=0.35, sid = 0.9, RCA=False):
+def generate_projection_images(surface_coords, spline_index, num_projections, image_dim, save_path, imagerpxspacing=0.35, sid = 0.9, RCA=False):
     image_list = []
     SID = np.ones(num_projections)*sid #made these small because of small image (200px), typically 0.9-1.2
     distanceSourcetoISO = 0.75  # distance from source to Isocenter
@@ -271,12 +272,11 @@ def generate_projection_images(surface_coords, spline_index, num_projections, im
         blurred_binary_image = filters.gaussian(closed_binary_image, sigma=0.5) > 0.25
         # plt.imshow(blurred_binary_image, cmap="gray")
         # plt.show()
-        if save_path is not None:
-            if not os.path.exists(os.path.join(save_path, partition, "images")):
-                os.makedirs(os.path.join(save_path, partition, "images"))
-            plt.imsave(
-                os.path.join(save_path, partition, "images", "image{:04d}{}.png".format(spline_index,suffixes[plane_index])),
-                blurred_binary_image, cmap="gray")
+        img = Image.fromarray( (blurred_binary_image * 255).astype(np.uint8), mode='L')
+        save_filename = os.path.join(save_path, 
+                                    "image{:04d}{}.png".format(spline_index, suffixes[plane_index]))
+        img.save(save_filename)
+        
         image_list.append(blurred_binary_image)
 
     return image_list, theta_array, phi_array

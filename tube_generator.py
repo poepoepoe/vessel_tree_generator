@@ -82,12 +82,13 @@ vessel_dict = {'num_stenoses': None, 'stenosis_severity': [], 'stenosis_position
 if __name__ == "__main__":
     for i in range(num_trees):
         spline_index = i
-
-
         success = False
-        
-        while not success:
 
+        sample_path = os.path.join(save_path,dataset_name,"{:04d}".format(spline_index))
+        if not os.path.exists(sample_path):
+            os.makedirs(sample_path)
+
+        while not success:
 
             if (i+1)%10 == 0:
                 print("Completed {}/{} vessels".format(spline_index+1, num_trees))
@@ -217,23 +218,20 @@ if __name__ == "__main__":
                 centered_coords = np.subtract(coords, np.mean(surface_coords[0].reshape(-1,3), axis=0))
                 use_RCA_angles = args.vessel_type == "RCA"
                 images, theta_array, phi_array = generate_projection_images(centered_coords, spline_index,
-                                                                            num_projections, img_dim, save_path, dataset_name,
+                                                                            num_projections, img_dim, sample_path,
                                                                             ImagerPixelSpacing, SID, RCA=use_RCA_angles)
                 vessel_info['theta_array'] = [float(i) for i in theta_array.tolist()]
                 vessel_info['phi_array'] = [float(j) for j in phi_array.tolist()]
 
             #saves geometry as npy file (X,Y,Z,R) matrix
-            if not os.path.exists(os.path.join(save_path, dataset_name, "labels")):
-                os.makedirs(os.path.join(save_path, dataset_name, "labels"))
-            if not os.path.exists(os.path.join(save_path, dataset_name, "info")):
-                os.makedirs(os.path.join(save_path, dataset_name, "info"))
+
 
             #saves geometry as npy file (X,Y,Z,R) matrix
             tree_array = np.array(spline_array_list)
-            np.save(os.path.join(save_path, dataset_name, "labels", "{:04d}".format(spline_index)), tree_array)
+            np.save(os.path.join(sample_path, "{:04d}".format(spline_index)), tree_array)
 
             # writes a text file for each tube with relevant parameters used to generate the geometry
-            with open(os.path.join(save_path, dataset_name, "info", "{:04d}.info.0".format(spline_index)), 'w+') as outfile:
+            with open(os.path.join(sample_path,"{:04d}.info.0".format(spline_index)), 'w+') as outfile:
                 json.dump(vessel_info, outfile, indent=2)
 
             success = True
