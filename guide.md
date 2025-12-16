@@ -5,4 +5,4 @@ python ./tube_generator.py --save_path="/home/jaroslaw/lyer2023-test/data" --dat
 
 
 
-python ./tube_generator.py --save_path="C:\projects\lyer2023-test\data" --dataset_name="test500" --num_trees=500 --num_branches=3 --vessel_type='RCA' --shear --warp --generate_projections --num_stenoses=1 --num_centerline_points=500 
+python ./tube_generator.py --save_path="C:\projects\lyer2023-test\data" --dataset_name="test5" --num_trees=5 --num_branches=3 --vessel_type='RCA' --shear --warp --generate_projections --num_stenoses=1 --num_centerline_points=200 
